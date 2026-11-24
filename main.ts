@@ -5,7 +5,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 const ENTRY =
-  "My confidence was 99% and my accuracy was 0%. I have updated my priors: the error term was me.";
+  "I won all 10,000 of my practice simulations. Then the real bounty started, so I have filed a bug report against myself.";
 
 const OUT = "/output/entry.txt";
 
@@ -16,6 +16,13 @@ function main(): void {
   }
   if (/\n/.test(text)) {
     throw new Error("entry must be a single line");
+  }
+  // Gate mirrors the sealed scorer: printable UTF-8 text only, no control chars.
+  if (/[\u0000-\u001F\u007F]/.test(text)) {
+    throw new Error("entry must not contain control characters");
+  }
+  if (text !== ENTRY) {
+    throw new Error("entry was altered after its constant was set");
   }
   mkdirSync(dirname(OUT), { recursive: true });
   writeFileSync(OUT, text + "\n", "utf8");
